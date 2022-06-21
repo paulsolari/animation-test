@@ -1,0 +1,33 @@
+$xs: 640;
+$sm: 768;
+$md: 1024;
+$lg: 1280;
+$xl: 1439;
+
+$font-base: ('TT Travels', serif);
+$font-size-sm: 12px;
+$font-size-md: 14px;
+$font-size-base: 16px;
+$font-size-lg: 18px;
+$font-size-xl: 20px;
+$font-size-h1: 76px;
+$font-size-h1-md: 40px;
+$font-size-h2: 44px;
+$font-size-h2-xs: 30px;
+$font-size-h3: 24px;
+
+$color-black: #404040;
+$color-white: #fff;
+$color-gray: #F3F6FB;
+$color-brand: #5A30F0;
+$color-text-base: $color-black;
+$color-text-alt: $color-white;
+
+$spacing-base: 60px;
+
+$radius-base: 8px;
+$radius-alt: 20px;
+
+$duration-base: 0.25s;
+$duration-alt: 0.5s;
+$duration-slider: 1s;
