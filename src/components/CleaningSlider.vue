@@ -7,6 +7,7 @@ import CleaningSliderItem from '@/components/CleaningSliderItem.vue';
 const state = reactive({
 	isSliderReady: false,
 	currentSlideId: 1,
+	previousSlideId: 1,
 	animationSlide: false,
 	slides: [
 		{
@@ -40,7 +41,7 @@ const state = reactive({
 		{
 			id: 3,
 			name: 'Комнаты',
-			image: 'slide-2.jpg',
+			image: 'slide-3.webp',
 			tooltips: [
 				'Чистим фасад вытяжки',
 				'Чистим плиту',
@@ -54,7 +55,7 @@ const state = reactive({
 		{
 			id: 4,
 			name: 'Прихожая',
-			image: 'slide-2.jpg',
+			image: 'slide-4.webp',
 			tooltips: [
 				'Чистим фасад вытяжки',
 				'Чистим плиту',
@@ -68,7 +69,6 @@ const state = reactive({
 	],
 });
 
-const cleaningSlider = ref();
 const slider = ref();
 
 const isDesktop = inject('isDesktop');
@@ -104,6 +104,7 @@ watch(isDesktop, (value) => {
 		});
 	} else {
 		gsap.set('.slider', { clearProps: 'x' });
+		state.isSliderReady = true;
 	}
 });
 
@@ -118,12 +119,58 @@ watch(width, () => {
 	}
 });
 
+watch(
+	() => state.isSliderReady,
+	() => {
+		gsap.to('.slide.current .tooltip', { scale: 1, stagger: 0.1 });
+	}
+);
+
+watch(
+	() => state.currentSlideId,
+	(value, oldValue) => {
+		state.previousSlideId = oldValue;
+
+		gsap.to('.slide.current', {
+			clipPath: 'inset(0 0 0 0%)',
+			duration: 1,
+			onStart: () => {
+				state.animationSlide = true;
+			},
+			onComplete: () => {
+				state.animationSlide = false;
+
+				gsap.to('.slide.previous', {
+					clipPath: 'inset(0 0 0 100%)',
+				});
+
+				gsap.to('.slide.previous .tooltip', {
+					scale: 0,
+					duration: 0,
+				});
+
+				gsap.to('.slide.current .tooltip', {
+					scale: 1,
+					stagger: 0.1,
+				});
+			},
+		});
+	},
+	{ flush: 'post' }
+);
+
 onMounted(() => {
 	gsap.from('.cleaning-slider', {
 		opacity: 0,
 		y: 100,
-		scrollTrigger: cleaningSlider.value,
+		scrollTrigger: '.cleaning-slider',
 	});
+
+	gsap.set('.slide:not(.current)', {
+		clipPath: 'inset(0 0 0 100%)',
+	});
+
+	gsap.set('.tooltip', { scale: 0 });
 });
 </script>
 
@@ -140,11 +187,9 @@ onMounted(() => {
 				:key="item.id"
 				v-bind="{
 					...item,
-					isSliderReady: state.isSliderReady,
 					currentSlideId: state.currentSlideId,
+					previousSlideId: state.previousSlideId,
 				}"
-				@transition-start="state.animationSlide = true"
-				@transition-end="state.animationSlide = false"
 			/>
 		</div>
 	</div>

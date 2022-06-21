@@ -1,69 +1,14 @@
 <script setup>
 import { getImageUrl } from '@/helpers';
-import { onMounted, ref, watch } from 'vue';
-import { gsap } from 'gsap';
 import CleaningSliderItemTooltip from '@/components/CleaningSliderItemTooltip.vue';
 
 const props = defineProps({
 	currentSlideId: { type: Number, required: true },
-	isSliderReady: { type: Boolean, required: true },
+	previousSlideId: { type: Number, required: true },
 	id: { type: Number, required: true },
 	name: { type: String, required: true },
 	image: { type: String, required: true },
 	tooltips: { type: Array, default: () => [] },
-});
-
-const emit = defineEmits(['transition-start', 'transition-end']);
-
-const slide = ref();
-
-const timeline = gsap.timeline();
-
-watch(
-	() => props.isSliderReady,
-	() => {
-		gsap.to('.slide.current .tooltip', { scale: 1, stagger: 0.1 });
-	}
-);
-
-watch(
-	() => props.currentSlideId,
-	(value) => {
-		if (value === props.id) {
-			timeline
-				.to('.slide.current', {
-					xPercent: 0,
-					duration: 1,
-					onStart: () => {
-						emit('transition-start');
-					},
-					onComplete: () => {
-						emit('transition-end');
-					},
-				})
-				.to('.slide:not(.current)', {
-					xPercent: 100,
-					duration: 0,
-				})
-				.to('.tooltip', {
-					scale: 0,
-					duration: 0,
-				})
-				.to('.slide.current .tooltip', {
-					scale: 1,
-					stagger: 0.1,
-				});
-		}
-	},
-	{ flush: 'post' }
-);
-
-onMounted(() => {
-	gsap.set('.slide:not(.current)', {
-		xPercent: 100,
-	});
-
-	gsap.set('.tooltip', { scale: 0 });
 });
 </script>
 
@@ -73,6 +18,11 @@ onMounted(() => {
 		:class="[
 			`slide slide-${props.id}`,
 			{ current: props.currentSlideId === id },
+			{
+				previous:
+					props.previousSlideId === id &&
+					props.previousSlideId !== props.currentSlideId,
+			},
 		]"
 	>
 		<div class="slide-inner">
@@ -100,6 +50,10 @@ onMounted(() => {
 	&.current {
 		position: relative;
 		z-index: 2;
+	}
+
+	&.previous {
+		z-index: 1;
 	}
 
 	.slide-inner {
