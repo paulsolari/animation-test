@@ -13,6 +13,12 @@ const { width } = useWindowResize();
 
 provide('isDesktop', isDesktop);
 provide('width', width);
+
+if (history.scrollRestoration) {
+	history.scrollRestoration = 'manual';
+} else {
+	window.onbeforeunload = () => window.scrollTo(0, 0);
+}
 </script>
 
 <template>
