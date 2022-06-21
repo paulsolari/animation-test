@@ -3,7 +3,7 @@ import { useEventListener } from './useEventListener';
 
 export function useMediaQuery(mediaQuery) {
 	const mediaQueryList = window.matchMedia(mediaQuery);
-	const matches = ref(false);
+	const matches = ref(null);
 	nextTick(() => {
 		matches.value = mediaQueryList.matches ? true : false;
 	});
